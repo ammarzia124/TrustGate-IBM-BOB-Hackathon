@@ -27,3 +27,14 @@ services:
       # ID from your watsonx.ai account; without one the engine drops IBM and logs why.
       - key: WATSONX_PROJECT_ID
         sync: false
+      # Guards POST /api/runs, which is the only way run records reach a deployed instance --
+      # the engine writes them to the disk of whatever machine ran it, which for CI is a
+      # throwaway runner. Paste the value into the Render dashboard; never into this file.
+      #
+      # It MUST be declared here and not only in the dashboard. A blueprint is authoritative:
+      # every deploy rewrites the service's environment from this list, so a key added by hand
+      # and not listed below is silently dropped on the next redeploy. That is exactly what
+      # happened -- the token was set, the service was redeployed, and POST /api/runs went
+      # back to answering 503 "ingest is not configured on this instance".
+      - key: TRUSTGATE_INGEST_TOKEN
+        sync: false
